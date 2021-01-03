@@ -1,15 +1,19 @@
 // Load HTTP module
-const http = require("http");
-const querystring = require("querystring");
+const http = require("http")
 const axios = require('axios');
+const express = require('express');
 
 // const JSON = 
 
 const hostname = "localhost";
 const port = 8000;
+const app = express();
 
 // Create HTTP server
-const server = http.createServer((req, res) => {
+app.get('/hello', (req, res) => {
+  res.send('fuck Sender');
+});
+app.get('/', (req, res) => {
 
   var config = {
     method: 'get',
@@ -21,10 +25,6 @@ const server = http.createServer((req, res) => {
   var teamMap = new Map();
   axios(config)
   .then(function (response) {
-    // Set the response HTTP header with HTTP status and Content type
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    // res.end();
-    // Send the response body "Hello World"
     var teams = response.data.league.franchises.franchise
     teams.forEach(team => {
        teamMap.set(team.id, team.name)
@@ -46,12 +46,15 @@ const server = http.createServer((req, res) => {
     rankings.forEach(rank => {
       standings.push(teamMap.get(rank.id))
     }) // render on server side html list, handlebars
-    res.end(JSON.stringify(standings));
+    res.status(200);
+    res.set('Content-Type', 'application/json');
+    res.send(JSON.stringify(standings));
+    // console.log(JSON.stringify(standings));
   })  
 });
 
 // Prints a log once the server starts listening
-server.listen(port, hostname, () => {
+app.listen(port, () => {
    console.log(`Server running at http://${hostname}:${port}/`);
 })
 
