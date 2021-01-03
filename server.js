@@ -4,6 +4,8 @@ const express = require('express');
 
 const port = 8000;
 const app = express();
+const fantasyUrl = 'https://www54.myfantasyleague.com/2020/export?L=17959&JSON=1&TYPE=';
+const fantasyCookie = 'MFL_LAST_LEAGUE_ID=17959';
 
 // Create HTTP server
 app.get('/hello', (req, res) => {
@@ -12,9 +14,9 @@ app.get('/hello', (req, res) => {
 app.get('/', (req, res) => {
     var config = {
         method: 'get',
-        url: 'https://www54.myfantasyleague.com/2020/export?L=17959&JSON=1&TYPE=league',
+        url: fantasyUrl + 'league',
         headers: { 
-            'Cookie': 'MFL_LAST_LEAGUE_ID=17959'
+            'Cookie': fantasyCookie
         }
     };
     var teamMap = new Map();
@@ -25,15 +27,13 @@ app.get('/', (req, res) => {
                 teamMap.set(team.id, team.name);
             });
 
-            var config = {
+            return axios({
                 method: 'get',
-                url: 'https://www54.myfantasyleague.com/2020/export?L=17959&JSON=1&TYPE=leagueStandings',
+                url: fantasyUrl + 'leagueStandings',
                 headers: { 
-                    'Cookie': 'MFL_LAST_LEAGUE_ID=17959'
+                    'Cookie': fantasyCookie
                 }
-            };
-  
-            return axios(config);
+            });
         })
         .then(function (response) {
             var rankings = response.data.leagueStandings.franchise;
